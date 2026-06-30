@@ -1,0 +1,12 @@
+Keep quick-push.sh file inside the directory
+
+
+Now open git bash form the same directory 
+
+./quick-push.sh https://github.com/yourusername/your-repo.git
+
+now replace yourusername/your-repo (e.g., digvijay1992/sir-model-sciml.git) 
+
+Now paste the lines into your git bash terminal
+
+./quick-push.sh https://github.com/digvijay1992/sir-model-sciml.git

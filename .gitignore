@@ -1,0 +1,35 @@
+# Julia generated files
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
+*.jl.old
+*.jl.bak
+LocalPreferences.toml
+
+quick-push.sh    # It will not push into github.
+steps_to_do.txt  # It will not push into github.
+
+# Artifacts
+__pycache__/
+*.pyc
+*.pyo
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.backup
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Note: Manifest.toml is NOT ignored (good for reproducibility)
+# Note: Project.toml is NOT ignored

@@ -1,0 +1,75 @@
+name: CI Pipeline - 1D Wave Inverse Problem PINN
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: ['1.10', '1.11']
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Julia
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: ${{ matrix.version }}
+
+      - name: Cache Julia artifacts and packages
+        uses: julia-actions/cache@v2
+        with:
+          path: |
+            ~/.julia/artifacts
+            ~/.julia/packages
+          key: ${{ runner.os }}-${{ matrix.version }}-${{ hashFiles('**/Project.toml') }}
+
+      - name: Install dependencies
+        run: julia --project=@. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+
+      - name: Run inverse wave-speed PINN
+        run: julia --project=@. inverse_prob_pinn.jl
+        timeout-minutes: 60
+
+      - name: Verify outputs
+        run: |
+          for file in \
+            inverse_c_wave_pinn_comparison.png \
+            inverse_c_initial_condition.png \
+            inverse_c_finaltime.png \
+            inverse_c_true_heatmap.png \
+            inverse_c_pinn_heatmap.png \
+            inverse_c_loss_history.png \
+            inverse_c_convergence.png \
+            inverse_c_pinn_vs_true.gif \
+            inverse_c_heatmap_animation.gif \
+            inverse_c_wave_pinn_simulation.jld2 \
+            inverse_c_wave_pinn_simulation.csv; do
+            if [ -f "$file" ]; then
+              echo "✅ $file generated"
+            else
+              echo "❌ Missing $file"
+              exit 1
+            fi
+          done
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: inverse-prob-pinn-results-julia-${{ matrix.version }}
+          path: |
+            *.png
+            *.gif
+            *.jld2
+            *.csv
+          retention-days: 7
